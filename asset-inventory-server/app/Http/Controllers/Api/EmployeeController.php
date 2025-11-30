@@ -12,63 +12,78 @@ use Illuminate\Support\Facades\Validator;
 class EmployeeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar empleados.
      */
     public function index(Request $request)
     {
-        $query = Employee::with('department')->get();
+        // 1. Iniciamos la consulta (Builder), NO ejecutamos get() todavía
+        $query = Employee::with('department');
 
-        if ($request->has('department_id')) {
-            $query->where('department_id', $request->input('department_id'));
+        // 2. Aplicamos filtros SI existen
+        if ($request->has('department_id') && $request->department_id != null) {
+            $query->where('department_id', $request->department_id);
         }
 
-        if ($request->has('search')) {
+        if ($request->has('search') && $request->search != null) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%");
+                $q->where('first_name', 'LIKE', "%{$search}%")
+                    ->orWhere('last_name', 'LIKE', "%{$search}%");
             });
         }
 
-        $employees = $query->orderBy('last_name', 'asc')->get();
+        // 3. Finalmente ordenamos y ejecutamos la consulta
+        // Aquí es donde ocurría el error: antes se ejecutaba el get() muy pronto
+        $employees = $query->orderBy('id', 'desc')->get();
 
         return response()->json($employees);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crear empleado.
      */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
-            'email' => 'required|email|unique:employees,email',
+            'email' => 'nullable|email|unique:employees,email',
             'department_id' => 'required|exists:departments,id',
-            'status' => 'in:activo,inactivo',
+            'status' => 'in:activo,inactivo'
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json($validator->errors(), 422);
         }
 
-        $employee = Employee::create($request->all());
+        $employee = Employee::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'department_id' => $request->department_id,
+            'status' => $request->status ?? 'activo'
+        ]);
 
+        // AUDITORÍA
         Audit_log::create([
             'user_id' => Auth::id(),
             'action' => 'CREATE',
             'table_name' => 'employees',
             'record_id' => $employee->id,
             'description' => "Creó al empleado: {$employee->first_name} {$employee->last_name}",
+            'ip_address' => $request->ip()
         ]);
 
-        return response()->json(['message' => 'Empleado creado exitosamente', 'data' => $employee], 201);
+        return response()->json([
+            'message' => 'Empleado registrado exitosamente',
+            'data' => $employee
+        ], 201);
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar un empleado.
      */
-    public function show(string $id)
+    public function show($id)
     {
         $employee = Employee::with(['department', 'assets'])->find($id);
 
@@ -80,14 +95,20 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar empleado.
      */
-    public function update(Request $request, Employee $employee)
+    public function update(Request $request, $id)
     {
+        $employee = Employee::find($id);
+
+        if (!$employee) {
+            return response()->json(['error' => 'Empleado no encontrado'], 404);
+        }
+
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
-            'email' => 'nullable|email|unique:employees,email,' . $employee->id,
+            'email' => 'nullable|email|unique:employees,email,' . $id,
             'department_id' => 'required|exists:departments,id',
             'status' => 'in:activo,inactivo'
         ]);
@@ -98,12 +119,14 @@ class EmployeeController extends Controller
 
         $employee->update($request->all());
 
+        // AUDITORÍA
         Audit_log::create([
             'user_id' => Auth::id(),
             'action' => 'UPDATE',
             'table_name' => 'employees',
             'record_id' => $employee->id,
             'description' => "Actualizó datos del empleado: {$employee->first_name} {$employee->last_name}",
+            'ip_address' => $request->ip()
         ]);
 
         return response()->json([
@@ -113,14 +136,20 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar empleado.
      */
-    public function destroy(Employee $employee)
+    public function destroy(Request $request, $id)
     {
+        $employee = Employee::find($id);
+
+        if (!$employee) {
+            return response()->json(['error' => 'Empleado no encontrado'], 404);
+        }
+
         if ($employee->assets()->count() > 0) {
             return response()->json([
                 'error' => 'No se puede eliminar',
-                'message' => 'Este empleado tiene activos asignados. Primero reasigna o desvincula los activos.'
+                'message' => 'Este empleado tiene activos asignados.'
             ], 409);
         }
 
@@ -132,8 +161,9 @@ class EmployeeController extends Controller
             'user_id' => Auth::id(),
             'action' => 'DELETE',
             'table_name' => 'employees',
-            'record_id' => $employee->id,
+            'record_id' => $id,
             'description' => "Eliminó al empleado: {$fullName}",
+            'ip_address' => $request->ip()
         ]);
 
         return response()->json(['message' => 'Empleado eliminado correctamente']);
