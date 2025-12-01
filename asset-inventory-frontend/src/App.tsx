@@ -13,6 +13,7 @@ import AuditLogs from './pages/AuditLogs';
 import InventoryExplorer from './pages/InventoryExplorer';
 import DepartmentDrilldown from './pages/drilldown/DepartmentDrilldown';
 import AssetDrilldown from './pages/drilldown/AssetDrilldown';
+import Users from './pages/Users';
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
               <Route path="/employees" element={<Employees />} />
               <Route path="/assets" element={<Assets />} />
               <Route path="/categories" element={<Categories />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/audit-logs" element={<AuditLogs />} />
 
               {/* Rutas Visuales (Drill-down) */}
               <Route path="/explorer" element={<InventoryExplorer />} />

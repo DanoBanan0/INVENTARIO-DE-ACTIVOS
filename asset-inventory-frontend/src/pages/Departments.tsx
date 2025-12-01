@@ -1,21 +1,21 @@
-// src/pages/Departments.tsx
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import type { Department } from '../types';
+import { useAuth } from '../context/AuthContext'; // <--- Importamos Auth
 import Swal from 'sweetalert2';
 import { FaPlus, FaEdit, FaTrash, FaBuilding, FaSpinner } from 'react-icons/fa';
 
 const Departments = () => {
+    const { user } = useAuth(); // <--- Obtenemos el usuario actual
     const [departments, setDepartments] = useState<Department[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Cargar la lista desde la API
     const fetchDepartments = async () => {
         try {
             const response = await api.get('/departments');
             setDepartments(response.data);
         } catch (error) {
-            console.error('Error al cargar departamentos', error);
+            console.error(error);
         } finally {
             setLoading(false);
         }
@@ -25,17 +25,16 @@ const Departments = () => {
         fetchDepartments();
     }, []);
 
-    // --- CREAR DEPARTAMENTO ---
+    // --- CREAR ---
     const handleCreate = async () => {
         const { value: formValues } = await Swal.fire({
             title: 'Nuevo Departamento',
             html:
-                '<input id="swal-input1" class="swal2-input" placeholder="Nombre (ej: Finanzas)">' +
-                '<input id="swal-input2" class="swal2-input" placeholder="Descripción (Opcional)">',
+                '<input id="swal-input1" class="swal2-input" placeholder="Nombre">' +
+                '<input id="swal-input2" class="swal2-input" placeholder="Descripción">',
             focusConfirm: false,
             showCancelButton: true,
             confirmButtonText: 'Guardar',
-            cancelButtonText: 'Cancelar',
             preConfirm: () => {
                 return [
                     (document.getElementById('swal-input1') as HTMLInputElement).value,
@@ -45,27 +44,23 @@ const Departments = () => {
         });
 
         if (formValues) {
-            const [name, description] = formValues;
-            if (!name) return Swal.fire('Error', 'El nombre es obligatorio', 'error');
-
             try {
-                // Enviamos al Backend
-                await api.post('/departments', { name, description });
-                Swal.fire('¡Creado!', 'El departamento ha sido registrado.', 'success');
-                fetchDepartments(); // Recargamos la tabla
+                await api.post('/departments', { name: formValues[0], description: formValues[1] });
+                Swal.fire('¡Creado!', 'Departamento registrado.', 'success');
+                fetchDepartments();
             } catch (error: any) {
-                Swal.fire('Error', error.response?.data?.message || 'No se pudo crear', 'error');
+                Swal.fire('Error', error.response?.data?.message || 'Error al guardar', 'error');
             }
         }
     };
 
-    // --- EDITAR DEPARTAMENTO ---
+    // --- EDITAR ---
     const handleEdit = async (dept: Department) => {
         const { value: formValues } = await Swal.fire({
             title: 'Editar Departamento',
             html:
-                `<input id="swal-input1" class="swal2-input" placeholder="Nombre" value="${dept.name}">` +
-                `<input id="swal-input2" class="swal2-input" placeholder="Descripción" value="${dept.description || ''}">`,
+                `<input id="swal-input1" class="swal2-input" value="${dept.name}" placeholder="Nombre">` +
+                `<input id="swal-input2" class="swal2-input" value="${dept.description || ''}" placeholder="Descripción">`,
             focusConfirm: false,
             showCancelButton: true,
             confirmButtonText: 'Actualizar',
@@ -78,10 +73,9 @@ const Departments = () => {
         });
 
         if (formValues) {
-            const [name, description] = formValues;
             try {
-                await api.put(`/departments/${dept.id}`, { name, description });
-                Swal.fire('¡Actualizado!', 'Los datos han sido guardados.', 'success');
+                await api.put(`/departments/${dept.id}`, { name: formValues[0], description: formValues[1] });
+                Swal.fire('¡Actualizado!', 'Datos guardados.', 'success');
                 fetchDepartments();
             } catch (error: any) {
                 Swal.fire('Error', error.response?.data?.message || 'Error al actualizar', 'error');
@@ -89,26 +83,23 @@ const Departments = () => {
         }
     };
 
-    // --- ELIMINAR DEPARTAMENTO ---
+    // --- ELIMINAR ---
     const handleDelete = (id: number) => {
         Swal.fire({
             title: '¿Estás seguro?',
-            text: "No podrás revertir esto. Si hay empleados asignados, fallará.",
+            text: "No se podrá eliminar si tiene empleados asignados.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
+            confirmButtonText: 'Sí, eliminar'
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
                     await api.delete(`/departments/${id}`);
-                    Swal.fire('¡Eliminado!', 'El departamento ha sido borrado.', 'success');
+                    Swal.fire('Eliminado', 'El departamento ha sido borrado.', 'success');
                     fetchDepartments();
                 } catch (error: any) {
-                    // Aquí mostramos el mensaje de error del backend (ej: "Tiene empleados asignados")
-                    Swal.fire('No se pudo eliminar', error.response?.data?.message || 'Error desconocido', 'error');
+                    Swal.fire('Error', error.response?.data?.message || 'No se pudo eliminar', 'error');
                 }
             }
         });
@@ -118,23 +109,25 @@ const Departments = () => {
 
     return (
         <div>
-            {/* Encabezado y Botón Agregar */}
-            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
                         <FaBuilding className="text-purple-600" /> Gestión de Departamentos
                     </h1>
-                    <p className="text-gray-500 text-sm">Administra las áreas de la empresa</p>
+                    <p className="text-gray-500 text-sm">Administración de áreas</p>
                 </div>
-                <button
-                    onClick={handleCreate}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg shadow-md flex items-center gap-2 transition-transform hover:scale-105 font-medium"
-                >
-                    <FaPlus /> Nuevo Departamento
-                </button>
+
+                {/* SOLO ADMIN PUEDE VER EL BOTÓN CREAR */}
+                {user?.role === 'admin' && (
+                    <button
+                        onClick={handleCreate}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow-md flex items-center gap-2 font-medium"
+                    >
+                        <FaPlus /> Nuevo Departamento
+                    </button>
+                )}
             </div>
 
-            {/* Tabla de Datos */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-bold tracking-wider">
@@ -142,41 +135,26 @@ const Departments = () => {
                             <th className="px-6 py-4 border-b">ID</th>
                             <th className="px-6 py-4 border-b">Nombre</th>
                             <th className="px-6 py-4 border-b">Descripción</th>
-                            <th className="px-6 py-4 border-b text-center">Acciones</th>
+                            {/* Solo mostramos columna Acciones si es Admin */}
+                            {user?.role === 'admin' && <th className="px-6 py-4 border-b text-center">Acciones</th>}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                        {departments.length === 0 ? (
-                            <tr>
-                                <td colSpan={4} className="text-center py-8 text-gray-400">
-                                    No hay departamentos registrados.
-                                </td>
-                            </tr>
-                        ) : (
-                            departments.map((dept) => (
-                                <tr key={dept.id} className="hover:bg-blue-50/30 transition-colors">
-                                    <td className="px-6 py-4 text-gray-500">#{dept.id}</td>
-                                    <td className="px-6 py-4 font-semibold text-gray-800">{dept.name}</td>
-                                    <td className="px-6 py-4 text-gray-500 text-sm">{dept.description || '-'}</td>
+                        {departments.map((dept) => (
+                            <tr key={dept.id} className="hover:bg-gray-50">
+                                <td className="px-6 py-4 text-gray-500">#{dept.id}</td>
+                                <td className="px-6 py-4 font-semibold text-gray-800">{dept.name}</td>
+                                <td className="px-6 py-4 text-gray-500">{dept.description || '-'}</td>
+
+                                {/* SOLO ADMIN PUEDE VER BOTONES DE ACCIÓN */}
+                                {user?.role === 'admin' && (
                                     <td className="px-6 py-4 flex justify-center gap-3">
-                                        <button
-                                            onClick={() => handleEdit(dept)}
-                                            className="text-blue-500 hover:text-blue-700 hover:bg-blue-100 p-2 rounded-full transition"
-                                            title="Editar"
-                                        >
-                                            <FaEdit />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(dept.id)}
-                                            className="text-red-500 hover:text-red-700 hover:bg-red-100 p-2 rounded-full transition"
-                                            title="Eliminar"
-                                        >
-                                            <FaTrash />
-                                        </button>
+                                        <button onClick={() => handleEdit(dept)} className="text-blue-500 hover:bg-blue-50 p-2 rounded-full"><FaEdit /></button>
+                                        <button onClick={() => handleDelete(dept.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-full"><FaTrash /></button>
                                     </td>
-                                </tr>
-                            ))
-                        )}
+                                )}
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

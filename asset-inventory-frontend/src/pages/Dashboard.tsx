@@ -12,7 +12,7 @@ const Dashboard = () => {
     // Función para obtener datos del backend
     const fetchDashboardData = async () => {
         try {
-            const response = await api.get('/dashboard-summary');
+            const response = await api.get('/dashboard/summary');
             setStats(response.data);
         } catch (error) {
             console.error("Error cargando dashboard:", error);
