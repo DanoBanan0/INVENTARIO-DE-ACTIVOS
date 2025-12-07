@@ -1,4 +1,3 @@
-// src/pages/Categories.tsx
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import type { Category } from '../types';
@@ -24,7 +23,6 @@ const Categories = () => {
         fetchCategories();
     }, []);
 
-    // --- CREAR ---
     const handleCreate = async () => {
         const { value: name } = await Swal.fire({
             title: 'Nueva Categoría',
@@ -49,7 +47,6 @@ const Categories = () => {
         }
     };
 
-    // --- EDITAR ---
     const handleEdit = async (cat: Category) => {
         const { value: name } = await Swal.fire({
             title: 'Editar Categoría',
@@ -74,7 +71,6 @@ const Categories = () => {
         }
     };
 
-    // --- ELIMINAR ---
     const handleDelete = (id: number) => {
         Swal.fire({
             title: '¿Eliminar categoría?',
@@ -100,7 +96,6 @@ const Categories = () => {
 
     return (
         <div>
-            {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -116,7 +111,6 @@ const Categories = () => {
                 </button>
             </div>
 
-            {/* Tabla */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden max-w-4xl">
                 <table className="w-full text-left border-collapse">
                     <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-bold tracking-wider">

@@ -25,7 +25,7 @@ function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
-              {/* Rutas de Administración (Tablas CRUD) */}
+              {/* Rutas de Administración */}
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/departments" element={<Departments />} />
               <Route path="/employees" element={<Employees />} />
@@ -34,7 +34,7 @@ function App() {
               <Route path="/users" element={<Users />} />
               <Route path="/audit-logs" element={<AuditLogs />} />
 
-              {/* Rutas Visuales (Drill-down) */}
+              {/* Rutas Visuales */}
               <Route path="/explorer" element={<InventoryExplorer />} />
               <Route path="/explorer/:deptId" element={<DepartmentDrilldown />} />
               <Route path="/explorer/:deptId/category/:catId" element={<AssetDrilldown />} />

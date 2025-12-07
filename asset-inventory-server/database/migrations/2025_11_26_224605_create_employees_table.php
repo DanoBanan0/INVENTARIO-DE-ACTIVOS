@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->nullable();
             $table->foreignId('department_id')->constrained('departments')->onDelete('cascade');
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', ['activo', 'inactivo'])->default('activo');
             $table->timestamps();
         });
     }

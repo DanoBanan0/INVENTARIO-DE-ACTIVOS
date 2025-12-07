@@ -2,7 +2,6 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { type ReactNode } from 'react';
 import { type User } from '../types';
 
-// Definimos qué datos y funciones estarán disponibles para toda la app
 interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
@@ -11,16 +10,13 @@ interface AuthContextType {
     loading: boolean;
 }
 
-// Creamos el contexto vacío
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// El Proveedor que envolverá la App
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
 
-    // Al cargar la página, verificamos si ya hay una sesión guardada
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
@@ -32,7 +28,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
     }, []);
 
-    // Función para Iniciar Sesión (Guardar datos)
     const login = (token: string, userData: User) => {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(userData));
@@ -40,7 +35,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(true);
     };
 
-    // Función para Cerrar Sesión (Borrar datos)
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -55,7 +49,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-// Hook personalizado para usar el contexto fácilmente
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

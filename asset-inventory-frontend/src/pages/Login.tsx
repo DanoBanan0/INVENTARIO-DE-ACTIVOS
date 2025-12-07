@@ -18,16 +18,12 @@ const Login = () => {
         setLoading(true);
 
         try {
-            // 1. Enviamos los datos al Backend
             const response = await api.post('/login', { email, password });
 
-            // 2. Si es exitoso, extraemos token y usuario
             const { authorization, user } = response.data;
 
-            // 3. Guardamos en el Contexto Global
             login(authorization.token, user);
 
-            // 4. Notificamos y Redirigimos
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -42,7 +38,6 @@ const Login = () => {
             navigate('/dashboard');
 
         } catch (error: any) {
-            // Manejo de errores (Credenciales, Usuario Inactivo, etc.)
             const errorMessage = error.response?.data?.error || 'Error al conectar con el servidor';
 
             Swal.fire({

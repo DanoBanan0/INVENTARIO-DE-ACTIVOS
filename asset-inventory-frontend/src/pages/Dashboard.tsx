@@ -9,7 +9,6 @@ const Dashboard = () => {
     const [stats, setStats] = useState<DashboardSummary | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Función para obtener datos del backend
     const fetchDashboardData = async () => {
         try {
             const response = await api.get('/dashboard/summary');
@@ -21,7 +20,6 @@ const Dashboard = () => {
         }
     };
 
-    // Ejecutar al montar el componente
     useEffect(() => {
         fetchDashboardData();
     }, []);
@@ -36,15 +34,12 @@ const Dashboard = () => {
 
     return (
         <div>
-            {/* Encabezado */}
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-800">Panel Principal</h1>
                 <p className="text-gray-500">Bienvenido de nuevo, <span className="font-semibold text-blue-600">{user?.name}</span></p>
             </div>
 
-            {/* Tarjetas de Resumen (Widgets) */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {/* Tarjeta 1: Activos */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Activos</p>
@@ -55,7 +50,6 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* Tarjeta 2: Empleados */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Empleados</p>
@@ -66,7 +60,6 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* Tarjeta 3: Departamentos */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Departamentos</p>
@@ -78,7 +71,6 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Sección de Activos Recientes */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                     <h2 className="text-lg font-bold text-gray-800">Últimos Activos Registrados</h2>

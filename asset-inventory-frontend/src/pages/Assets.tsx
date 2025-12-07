@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import type { Asset, Category, Employee } from '../types';
-import { useAuth } from '../context/AuthContext'; // <--- Import Auth
+import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
 import { FaLaptop, FaPlus, FaEdit, FaTrash, FaSearch, FaSpinner, FaBoxOpen } from 'react-icons/fa';
 
 const Assets = () => {
-    const { user } = useAuth(); // <--- User
+    const { user } = useAuth();
     const [assets, setAssets] = useState<Asset[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -40,7 +40,6 @@ const Assets = () => {
     const getCategoryOptions = (sel?: number) => categories.map(c => `<option value="${c.id}" ${c.id === sel ? 'selected' : ''}>${c.name}</option>`).join('');
     const getEmployeeOptions = (sel?: number) => employees.map(e => `<option value="${e.id}" ${e.id === sel ? 'selected' : ''}>${e.first_name} ${e.last_name} (${e.department?.name})</option>`).join('');
 
-    // --- CREAR / EDITAR ---
     const handleOpenForm = async (asset?: Asset) => {
         const isEdit = !!asset;
         const defaults = asset || {
@@ -115,7 +114,6 @@ const Assets = () => {
         }
     };
 
-    // --- BAJA ---
     const handleDelete = (id: number) => {
         Swal.fire({ title: '¿Dar de baja?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Sí' })
             .then(async (result) => {
@@ -139,7 +137,6 @@ const Assets = () => {
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><FaSearch className="text-gray-400" /></div>
                         <input type="text" placeholder="Buscar..." className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value={searchTerm} onChange={handleSearch} />
                     </div>
-                    {/* SOLO ADMIN */}
                     {user?.role === 'admin' && (
                         <button onClick={() => handleOpenForm()} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow-md flex items-center gap-2 font-medium whitespace-nowrap">
                             <FaPlus /> Agregar Activo
@@ -180,7 +177,6 @@ const Assets = () => {
                                     <div className="text-xs text-gray-500">{asset.employee?.department?.name}</div>
                                 </td>
                                 <td className="px-4 py-3"><span className="bg-gray-100 px-2 py-1 rounded text-xs">{asset.status}</span></td>
-                                {/* SOLO ADMIN */}
                                 {user?.role === 'admin' && (
                                     <td className="px-4 py-3 flex justify-center gap-2">
                                         <button onClick={() => handleOpenForm(asset)} className="text-blue-500 hover:bg-blue-100 p-1.5 rounded"><FaEdit /></button>

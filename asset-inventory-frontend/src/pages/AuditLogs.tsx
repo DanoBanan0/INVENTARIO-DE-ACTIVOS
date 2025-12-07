@@ -1,9 +1,7 @@
-// src/pages/AuditLogs.tsx
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { FaHistory, FaUserClock, FaSpinner, FaSearch } from 'react-icons/fa';
 
-// Definimos el tipo de dato para el Log (solo se usa aquí, así que lo pongo local)
 interface AuditLog {
     id: number;
     user: { name: string; email: string; role: string } | null;
@@ -34,13 +32,11 @@ const AuditLogs = () => {
         fetchLogs();
     }, []);
 
-    // Filtrado simple en el cliente (por usuario o descripción)
     const filteredLogs = logs.filter(log =>
         log.user?.name.toLowerCase().includes(filter.toLowerCase()) ||
         log.description.toLowerCase().includes(filter.toLowerCase())
     );
 
-    // Helper para colores según la acción
     const getActionBadge = (action: string) => {
         switch (action) {
             case 'CREATE': return <span className="px-2 py-1 rounded-md bg-green-100 text-green-700 text-xs font-bold border border-green-200">CREACIÓN</span>;
@@ -62,7 +58,6 @@ const AuditLogs = () => {
                     <p className="text-gray-500 text-sm">Registro detallado de movimientos y seguridad</p>
                 </div>
 
-                {/* Buscador de Logs */}
                 <div className="relative w-full md:w-64">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <FaSearch className="text-gray-400" />

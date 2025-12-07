@@ -25,7 +25,7 @@ const InventoryExplorer = () => {
                 {departments.map((dept) => (
                     <div
                         key={dept.id}
-                        onClick={() => navigate(`/explorer/${dept.id}`)} // <--- OJO A LA RUTA
+                        onClick={() => navigate(`/explorer/${dept.id}`)}
                         className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-xl hover:border-blue-300 transition-all cursor-pointer group relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">

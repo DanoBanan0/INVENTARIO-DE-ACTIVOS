@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import type { Department } from '../types';
-import { useAuth } from '../context/AuthContext'; // <--- Importamos Auth
+import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
 import { FaPlus, FaEdit, FaTrash, FaBuilding, FaSpinner } from 'react-icons/fa';
 
 const Departments = () => {
-    const { user } = useAuth(); // <--- Obtenemos el usuario actual
+    const { user } = useAuth();
     const [departments, setDepartments] = useState<Department[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -25,7 +25,6 @@ const Departments = () => {
         fetchDepartments();
     }, []);
 
-    // --- CREAR ---
     const handleCreate = async () => {
         const { value: formValues } = await Swal.fire({
             title: 'Nuevo Departamento',
@@ -54,7 +53,6 @@ const Departments = () => {
         }
     };
 
-    // --- EDITAR ---
     const handleEdit = async (dept: Department) => {
         const { value: formValues } = await Swal.fire({
             title: 'Editar Departamento',
@@ -83,7 +81,6 @@ const Departments = () => {
         }
     };
 
-    // --- ELIMINAR ---
     const handleDelete = (id: number) => {
         Swal.fire({
             title: '¿Estás seguro?',
@@ -117,7 +114,6 @@ const Departments = () => {
                     <p className="text-gray-500 text-sm">Administración de áreas</p>
                 </div>
 
-                {/* SOLO ADMIN PUEDE VER EL BOTÓN CREAR */}
                 {user?.role === 'admin' && (
                     <button
                         onClick={handleCreate}
@@ -135,7 +131,6 @@ const Departments = () => {
                             <th className="px-6 py-4 border-b">ID</th>
                             <th className="px-6 py-4 border-b">Nombre</th>
                             <th className="px-6 py-4 border-b">Descripción</th>
-                            {/* Solo mostramos columna Acciones si es Admin */}
                             {user?.role === 'admin' && <th className="px-6 py-4 border-b text-center">Acciones</th>}
                         </tr>
                     </thead>
@@ -145,8 +140,6 @@ const Departments = () => {
                                 <td className="px-6 py-4 text-gray-500">#{dept.id}</td>
                                 <td className="px-6 py-4 font-semibold text-gray-800">{dept.name}</td>
                                 <td className="px-6 py-4 text-gray-500">{dept.description || '-'}</td>
-
-                                {/* SOLO ADMIN PUEDE VER BOTONES DE ACCIÓN */}
                                 {user?.role === 'admin' && (
                                     <td className="px-6 py-4 flex justify-center gap-3">
                                         <button onClick={() => handleEdit(dept)} className="text-blue-500 hover:bg-blue-50 p-2 rounded-full"><FaEdit /></button>

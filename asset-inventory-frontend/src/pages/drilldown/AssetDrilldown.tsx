@@ -16,11 +16,9 @@ const AssetDrilldown = () => {
         const loadAssets = async () => {
             try {
                 setLoading(true);
-                // 1. Usamos el endpoint de activos con filtros
                 const response = await api.get(`/assets?department_id=${deptId}&category_id=${catId}`);
                 setAssets(response.data);
 
-                // 2. Cargamos nombres para el título (Opcional, solo cosmético)
                 const deptRes = await api.get(`/departments/${deptId}`);
                 const catRes = await api.get(`/categories/${catId}`);
                 setInfo({ dept: deptRes.data, cat: catRes.data });
@@ -52,7 +50,6 @@ const AssetDrilldown = () => {
                 </div>
             </div>
 
-            {/* TABLA DE ACTIVOS (Similar a la de Assets.tsx pero simplificada) */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <table className="w-full text-left">
                     <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-bold">

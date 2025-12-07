@@ -1,4 +1,3 @@
-// src/components/Sidebar.tsx
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -16,7 +15,6 @@ import {
 const Sidebar = () => {
     const { logout, user } = useAuth();
 
-    // Definimos TODOS los items posibles
     const allMenuItems = [
         {
             path: '/dashboard',
@@ -30,7 +28,6 @@ const Sidebar = () => {
             icon: <FaSearchLocation />,
             allowedRoles: ['admin', 'jefe', 'auditor']
         },
-        // Módulos de Administración (Solo Admin)
         {
             path: '/departments',
             name: 'Departamentos',
@@ -61,7 +58,6 @@ const Sidebar = () => {
             icon: <FaUserShield />,
             allowedRoles: ['admin']
         },
-        // Auditoría (Admin y Auditor)
         {
             path: '/audit-logs',
             name: 'Auditoría',
@@ -70,7 +66,6 @@ const Sidebar = () => {
         },
     ];
 
-    // Filtramos según el rol del usuario logueado
     const visibleMenuItems = allMenuItems.filter(item =>
         item.allowedRoles.includes(user?.role || '')
     );
@@ -78,8 +73,7 @@ const Sidebar = () => {
     return (
         <div className="w-64 bg-slate-900 text-white h-screen flex flex-col shadow-xl fixed left-0 top-0">
             <div className="p-6 border-b border-slate-700 flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold">K</div>
-                <h1 className="text-xl font-bold tracking-wide">Kairos Inv</h1>
+                <h1 className="text-xl font-bold tracking-wide">Inventario</h1>
             </div>
 
             <div className="p-4 bg-slate-800/50 mb-2">

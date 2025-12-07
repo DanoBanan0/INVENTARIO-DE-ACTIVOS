@@ -5,7 +5,7 @@ import type { Category, Department } from '../../types';
 import { FaLaptop, FaArrowLeft, FaBoxOpen } from 'react-icons/fa';
 
 const DepartmentDrilldown = () => {
-    const { deptId } = useParams(); // Obtenemos el ID del departamento de la URL
+    const { deptId } = useParams();
     const navigate = useNavigate();
     
     const [department, setDepartment] = useState<Department | null>(null);
@@ -14,12 +14,9 @@ const DepartmentDrilldown = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Cargamos info del depto para el título
                 const deptRes = await api.get(`/departments/${deptId}`);
                 setDepartment(deptRes.data);
 
-                // Cargamos todas las categorías
-                // (Mejora futura: cargar solo categorías que tengan activos en este depto)
                 const catRes = await api.get('/categories');
                 setCategories(catRes.data);
             } catch (error) {
@@ -30,7 +27,6 @@ const DepartmentDrilldown = () => {
     }, [deptId]);
 
     const handleCategoryClick = (catId: number) => {
-        // Cambiamos /departments por /explorer
         navigate(`/explorer/${deptId}/category/${catId}`); 
     };
 
@@ -53,7 +49,6 @@ const DepartmentDrilldown = () => {
                         className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-blue-400 cursor-pointer transition-all text-center group"
                     >
                         <div className="w-16 h-16 bg-gray-50 group-hover:bg-blue-50 text-gray-400 group-hover:text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl transition-colors">
-                            {/* Podrías poner íconos dinámicos aquí según el nombre, por ahora uno genérico */}
                             <FaLaptop />
                         </div>
                         <h3 className="font-bold text-gray-700 group-hover:text-blue-700">{cat.name}</h3>

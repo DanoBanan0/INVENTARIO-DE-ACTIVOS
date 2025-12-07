@@ -17,7 +17,6 @@ const Users = () => {
 
     useEffect(() => { fetchUsers(); }, []);
 
-    // --- CREAR USUARIO ---
     const handleCreate = async () => {
         const { value: formValues } = await Swal.fire({
             title: 'Nuevo Usuario',
@@ -56,7 +55,6 @@ const Users = () => {
         }
     };
 
-    // --- ELIMINAR ---
     const handleDelete = async (id: number) => {
         const result = await Swal.fire({
             title: '¿Eliminar usuario?',

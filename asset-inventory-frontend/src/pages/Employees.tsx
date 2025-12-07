@@ -1,26 +1,23 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import type { Employee, Department } from '../types';
-import { useAuth } from '../context/AuthContext'; // <--- Import Auth
+import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
 import { FaPlus, FaEdit, FaTrash, FaUsers, FaSpinner, FaCircle } from 'react-icons/fa';
 
 const Employees = () => {
-    const { user } = useAuth(); // <--- User
+    const { user } = useAuth();
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [departments, setDepartments] = useState<Department[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Carga robusta por separado
     const fetchData = async () => {
         setLoading(true);
-        // 1. Cargar Empleados
         try {
             const empRes = await api.get('/employees');
             setEmployees(empRes.data);
         } catch (error) { console.error('Error empleados:', error); }
 
-        // 2. Cargar Departamentos
         try {
             const deptRes = await api.get('/departments');
             setDepartments(deptRes.data);
@@ -40,7 +37,6 @@ const Employees = () => {
         ).join('');
     };
 
-    // --- CREAR ---
     const handleCreate = async () => {
         if (departments.length === 0) return Swal.fire('Aviso', 'No hay departamentos creados.', 'warning');
 
@@ -77,7 +73,6 @@ const Employees = () => {
         }
     };
 
-    // --- EDITAR ---
     const handleEdit = async (emp: Employee) => {
         const { value: formValues } = await Swal.fire({
             title: 'Editar Empleado',
@@ -117,7 +112,6 @@ const Employees = () => {
         }
     };
 
-    // --- ELIMINAR ---
     const handleDelete = (id: number) => {
         Swal.fire({
             title: '¿Eliminar?',
@@ -150,7 +144,6 @@ const Employees = () => {
                     </h1>
                     <p className="text-gray-500 text-sm">Gestiona el personal</p>
                 </div>
-                {/* SOLO ADMIN */}
                 {user?.role === 'admin' && (
                     <button
                         onClick={handleCreate}
@@ -184,7 +177,6 @@ const Employees = () => {
                                         <span className="text-sm">{emp.status}</span>
                                     </div>
                                 </td>
-                                {/* SOLO ADMIN */}
                                 {user?.role === 'admin' && (
                                     <td className="px-6 py-4 flex justify-center gap-3">
                                         <button onClick={() => handleEdit(emp)} className="text-blue-500 hover:bg-blue-50 p-2 rounded-full"><FaEdit /></button>
