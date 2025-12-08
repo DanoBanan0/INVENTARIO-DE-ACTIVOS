@@ -18,26 +18,22 @@ class AssetController extends Controller
     {
         $query = Asset::with(['category', 'employee.department']);
 
-        // 1. Filtro por Departamento (Indirecto a través del empleado)
         if ($request->has('department_id')) {
             $query->whereHas('employee', function ($q) use ($request) {
                 $q->where('department_id', $request->department_id);
             });
         }
 
-        // 2. Filtro por Categoría
         if ($request->has('category_id')) {
             $query->where('category_id', $request->category_id);
         }
 
-        // 3. BUSCADOR GLOBAL (Código, Marca, Modelo o Nombre del Empleado)
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('inventory_code', 'LIKE', "%{$search}%")
                     ->orWhere('brand', 'LIKE', "%{$search}%")
                     ->orWhere('model', 'LIKE', "%{$search}%")
-                    // Buscamos también dentro de la relación de empleados
                     ->orWhereHas('employee', function ($q2) use ($search) {
                         $q2->where('first_name', 'LIKE', "%{$search}%")
                             ->orWhere('last_name', 'LIKE', "%{$search}%");
@@ -111,13 +107,11 @@ class AssetController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        // Detectar cambios importantes para el log
         $oldStatus = $asset->status;
         $oldEmployee = $asset->employee_id;
 
         $asset->update($request->all());
 
-        // Construir descripción del cambio para auditoría
         $logDescription = "Actualizó activo {$asset->inventory_code}.";
         if ($oldStatus !== $asset->status) {
             $logDescription .= " Cambio de estado: $oldStatus -> {$asset->status}.";
@@ -146,12 +140,11 @@ class AssetController extends Controller
     public function destroy(Asset $asset)
     {
         $code = $asset->inventory_code;
-        $asset->delete(); // Esto solo pone la fecha en deleted_at
+        $asset->delete();
 
-        // AUDITORÍA
         Audit_log::create([
             'user_id' => Auth::id(),
-            'action' => 'DELETE', // O "SOFT_DELETE"
+            'action' => 'DELETE',
             'table_name' => 'assets',
             'record_id' => $code,
             'description' => "Dio de baja el activo: {$code}",

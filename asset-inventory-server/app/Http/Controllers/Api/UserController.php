@@ -11,10 +11,8 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    // Listar usuarios (Solo Admin debería ver esto)
     public function index()
     {
-        // Ocultamos al propio usuario logueado para que no se borre a sí mismo accidentalmente
         $currentUserId = Auth::id();
 
         $users = User::query()
@@ -25,7 +23,6 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-    // Crear nuevo usuario (Admin)
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -42,7 +39,7 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password), // Encriptar
+            'password' => Hash::make($request->password),
             'role' => $request->role,
             'is_active' => true
         ]);
@@ -50,7 +47,6 @@ class UserController extends Controller
         return response()->json(['message' => 'Usuario creado exitosamente', 'data' => $user], 201);
     }
 
-    // Editar usuario (Rol o Estado)
     public function update(Request $request, $id)
     {
         $user = User::find($id);
@@ -68,7 +64,6 @@ class UserController extends Controller
 
         $data = $request->only(['name', 'email', 'role', 'is_active']);
         
-        // Solo actualizamos password si enviaron una nueva
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
@@ -78,7 +73,6 @@ class UserController extends Controller
         return response()->json(['message' => 'Usuario actualizado', 'data' => $user]);
     }
 
-    // Eliminar usuario
     public function destroy($id)
     {
         $user = User::find($id);

@@ -16,10 +16,8 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Iniciamos la consulta (Builder), NO ejecutamos get() todavía
         $query = Employee::with('department');
 
-        // 2. Aplicamos filtros SI existen
         if ($request->has('department_id') && $request->department_id != null) {
             $query->where('department_id', $request->department_id);
         }
@@ -32,8 +30,6 @@ class EmployeeController extends Controller
             });
         }
 
-        // 3. Finalmente ordenamos y ejecutamos la consulta
-        // Aquí es donde ocurría el error: antes se ejecutaba el get() muy pronto
         $employees = $query->orderBy('id', 'desc')->get();
 
         return response()->json($employees);
@@ -64,7 +60,6 @@ class EmployeeController extends Controller
             'status' => $request->status ?? 'activo'
         ]);
 
-        // AUDITORÍA
         Audit_log::create([
             'user_id' => Auth::id(),
             'action' => 'CREATE',
@@ -119,7 +114,6 @@ class EmployeeController extends Controller
 
         $employee->update($request->all());
 
-        // AUDITORÍA
         Audit_log::create([
             'user_id' => Auth::id(),
             'action' => 'UPDATE',

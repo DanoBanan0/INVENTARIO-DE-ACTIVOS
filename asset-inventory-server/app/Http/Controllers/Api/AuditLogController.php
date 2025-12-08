@@ -13,9 +13,9 @@ class AuditLogController extends Controller
      */
     public function index()
     {
-        $logs = Audit_log::with('user:id,name,email,role') // Solo traemos campos necesarios del usuario
+        $logs = Audit_log::with('user:id,name,email,role')
                         ->orderBy('created_at', 'desc')
-                        ->limit(100) // Limitamos a los últimos 100 para no saturar la vista
+                        ->limit(100)
                         ->get();
 
         return response()->json($logs);
