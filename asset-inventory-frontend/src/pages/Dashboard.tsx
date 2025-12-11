@@ -40,15 +40,6 @@ const Dashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
-                    <div>
-                        <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Activos</p>
-                        <p className="text-3xl font-bold text-slate-800 mt-1">{stats?.total_assets || 0}</p>
-                    </div>
-                    <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-xl">
-                        <FaLaptop />
-                    </div>
-                </div>
 
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
                     <div>

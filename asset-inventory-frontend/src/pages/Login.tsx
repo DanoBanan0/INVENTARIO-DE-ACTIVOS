@@ -112,9 +112,7 @@ const Login = () => {
                     </button>
                 </form>
 
-                <div className="mt-6 text-center text-sm text-gray-400">
-                    &copy; {new Date().getFullYear()} Empresa TI. Todos los derechos reservados.
-                </div>
+
             </div>
         </div>
     );

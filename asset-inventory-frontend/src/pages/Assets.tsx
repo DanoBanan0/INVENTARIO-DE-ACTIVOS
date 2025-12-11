@@ -66,7 +66,6 @@ const Assets = () => {
                         <select id="swal-status" class="swal2-select m-0 w-full text-base">
                             <option value="operativo" ${defaults.status === 'operativo' ? 'selected' : ''}>🟢 Operativo</option>
                             <option value="en_reparacion" ${defaults.status === 'en_reparacion' ? 'selected' : ''}>🟡 En Reparación</option>
-                            <option value="disponible" ${defaults.status === 'disponible' ? 'selected' : ''}>🔵 Disponible</option>
                             <option value="obsoleto" ${defaults.status === 'obsoleto' ? 'selected' : ''}>🟠 Obsoleto</option>
                             <option value="baja" ${defaults.status === 'baja' ? 'selected' : ''}>🔴 De Baja</option>
                         </select>
